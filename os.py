@@ -1,5 +1,6 @@
 import re
 import hashlib
+import os 
 
 class FileMangment:
     def __init__(self,path:str):
@@ -31,11 +32,20 @@ class FileMangment:
     
     
 class File:
-    def __init__(self,name,data="",password=None,is_encrypted=False):
+    def __init__(self,name,data=None ,password_hash=None):
         self.data=data if data else []
         self.name=name
-        self._password=password
+        self._password_hash=password_hash
     
+    def hash_password(self,password):
+        
+        return hashlib.sha256(password.encode()).hexdigest()
+    
+    def is_encrypted(self):
+        return self.name.startswith(".")
+    
+    def read(self):
+        
     def get_content(self):
         return self.content 
     
@@ -45,16 +55,32 @@ class File:
     def to_dict():
         pass
     
-    def is_encrypted(self):
-        if self.name.startswith("."):
-            return True
-        else :
-            return False
+   
 
 class Folder:
     def __init__(self,name,files):
         self.name=name
-        self.files=files
+        self.contents=[]
 
-    def add_folder(self):
-        
+    def add_item(self,item):
+        self.contents.append(item)
+    
+    def remove_item(self,item_name):
+        for item in self.contents:
+            if item.name==item_name:
+                self.contents.remove(item)
+            else :
+                return f"{item_name} not found !!"
+    
+    def search_item(self,item_name):
+        for item in self.contents:
+            if item.name==item_name:
+                return item 
+            else :
+                return None
+    
+    def list_contents(self):
+        return [item.name for item in self.contents]
+     
+    
+       
