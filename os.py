@@ -1,4 +1,5 @@
 import re
+import hashlib
 
 class FileMangment:
     def __init__(self,path:str):
@@ -31,7 +32,7 @@ class FileMangment:
     
 class File:
     def __init__(self,name,data="",password=None,is_encrypted=False):
-        self.data=data
+        self.data=data if data else []
         self.name=name
         self._password=password
     
@@ -55,4 +56,5 @@ class Folder:
         self.name=name
         self.files=files
 
-    
+    def add_folder(self):
+        
