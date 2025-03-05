@@ -3,7 +3,7 @@ import hashlib
 import os 
 
 class FileMangment:
-    def __init__(self,path:str):
+    def __init__(self):
         
         self.path = self.root
         self.root=Folder("/")
@@ -22,17 +22,52 @@ class FileMangment:
     #        self.current_folder = self.path
     #    else:
     #        self.current_folder = 
+    def cd(self,path:str):
+        if len(path)==0:
+            self.current_folder = self.root
+        
+        folders=path.strip("/").split("/")  
+        if path[0] !="/":
+            destination=self.current_folder
+        else :
+            destination=self.root
+        
+        for folder_name in folders:
+            if not folder_name and folder_name==".":
+                continue
+            if folder_name=="..":
+                if destination==self.root :
+                    print("Error:Already at root folder")
+                
+                else :
+                    destination = destination.parent
+            
+            else :
+                found=False 
+                for item in destination.contents:
+                    if isinstance(item)
+                
+                   
+        
             
     def mkdir(self):
         pass
     def ls(self,path):
         pass
         
+    def rm(self):
+        pass
+    def cp(self):
+        pass
+    def cat(self):
+        pass
+    def mv(self):
+        pass
     
     
     
 class File:
-    def __init__(self,name,data=None ,password_hash=None):
+    def __init__(self,name,data=None,password_hash=None):
         self.data=data if data else []
         self.name=name
         self._password_hash=password_hash
@@ -42,15 +77,26 @@ class File:
         return hashlib.sha256(password.encode()).hexdigest()
     
     def is_encrypted(self):
-        return self.name.startswith(".")
+        if self.name.startswith("."):
+            return True
+        else :
+            False 
     
     def read(self):
-        
-    def get_content(self):
-        return self.content 
+        if self.is_encrypted():
+            password =input(f"please enter a password for {self.name} : ")
+            if self.hash_password(password) != self._password_hash:
+                return "Incorrect Password"
+        return self.data
     
-    def set_content(self,content):
-        self.content=content
+    def write(self,new_data):
+        return self.data.append(new_data)
+        
+    
+    
+    
+    
+    
         
     def to_dict():
         pass
@@ -58,9 +104,10 @@ class File:
    
 
 class Folder:
-    def __init__(self,name,files):
+    def __init__(self,name,parent=None):
         self.name=name
         self.contents=[]
+        self.parent=parent
 
     def add_item(self,item):
         self.contents.append(item)
