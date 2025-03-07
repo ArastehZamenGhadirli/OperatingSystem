@@ -33,10 +33,6 @@ class File:
 
 
 
-
-
-
-
 class Folder:
     def __init__(self, name, parent=None):
         self.name = name
@@ -64,14 +60,45 @@ class Folder:
         return [item.name for item in self.contents]
 
 
-
-
 class FileMangment:
     def __init__(self):
 
         
         self.root = Folder("/")
         self.current_folder = self.root
+
+    
+    def navigate_path(self,path:str):
+        if not path:  
+            self.current_folder = self.root
+            return
+    
+        folders = path.strip("/").split("/")  
+        if path[0] == "/":  
+            destination = self.root  
+        else:  
+            destination = self.current_folder  
+    
+        for folder_name in folders:
+            if not folder_name or folder_name == ".": 
+                continue
+            if folder_name == "..":  
+                if destination == self.root:
+                    print("Error: Already at root folder.")
+                    return
+                else:
+                    destination = destination.parent 
+            else:
+                for item in destination.contents:
+                    if isinstance(item, Folder) and item.name == folder_name:
+                        destination = item  
+                        found = True
+                        break
+                if not found:
+                    print(f"Error: Folder '{folder_name}' not found.")
+                    return None  
+
+        return destination  
 
     # def execute(self,cmd):
     #    parts = cmd.strip().split()
@@ -88,42 +115,22 @@ class FileMangment:
     #    else:
     #        self.current_folder =
     def cd(self, path: str):
-        if len(path) == 0:
-            self.current_folder = self.root
+        """
+        Change the current folder to the specified path.
+        :param path: The path to navigate to (e.g., "folder1/folder2").
+        """    
+          
+        print(f"Current folder: {self.current_folder.name}")
 
-        folders = path.strip("/").split("/")
-        if path[0] != "/":
-            destination = self.current_folder
-        else:
-            destination = self.root
-
-        for folder_name in folders:
-            if not folder_name and folder_name == ".":
-                continue
-            if folder_name == "..":
-                if destination == self.root:
-                    print("Error:Already at root folder")
-                    return
-
-                else:
-                    destination = destination.parent
-
-            else:
-                found = False
-                for item in destination.contents:
-                    if isinstance(item, Folder) and item.name == folder_name:
-                        destination = item
-                        found = True
-                        break
-                if not found:
-                    print(f"Error :Folder '{folder_name}' not found .")
-                    return
-
-        self.current_folder = destination
-
-    def mkdir(self):
-        pass
-
+    def mkdir(self,path:str,new_folder:str):
+        
+        parts = path.strip("/").split("/")
+        last_part=parts[-1]
+        if last_part==self.current_folder :
+            return f"{self.current_folder} is already exist "
+        else :
+            
+        
     def ls(self, path):
         pass
 
@@ -166,7 +173,7 @@ folder2.add_item(folder3)
 
 
 print("--- Test 1: Start at root ---")
-print_current_folder(file_system)  # Expected: Current folder: root
+print_current_folder(file_system) 
 
 print("\n--- Test 2: Navigate to folder1 ---")
 file_system.cd("folder1")
@@ -186,4 +193,12 @@ print_current_folder(file_system)
 
 print("\n--- Test 6: Navigate back to root using absolute path ---")
 file_system.cd("/")
+print_current_folder(file_system)
+
+print("\n--- Test 7: Navigate to folder3 using absolute path ---")
+file_system.cd("/folder1/folder2/folder3")
+print_current_folder(file_system) 
+
+print("\n--- Test 8: Try to navigate to a non-existent folder ---")
+file_system.cd("invalid_folder")  
 print_current_folder(file_system)
