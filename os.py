@@ -9,6 +9,16 @@ class File:
         self.name = name
         self._password_hash = password_hash
 
+    
+    
+    def verify_password(self, password):
+        """
+        Verify the password for an encrypted file.
+        :param password: The password to verify.
+        :return: True if the password is correct, False otherwise.
+        """
+        return self.password_hash == self._hash_password(password)
+
     def hash_password(self, password):
 
         return hashlib.sha256(password.encode()).hexdigest()
@@ -29,7 +39,7 @@ class File:
     def write(self, new_data):
         return self.data.append(new_data)
 
-    def to_dict():
+    def to_dict():#it is for json 
         pass
 
 
@@ -150,8 +160,21 @@ class FileMangment:
     def cp(self):
         pass
 
-    def cat(self):
-        pass
+    def cat(self,file_name:str):
+        
+        file = self.current_folder.search_item(file_name)
+        if not file or not isinstance(file,File) :
+            print(f"{file} does not exist.")
+        
+        if file.is_encrypted():
+            password=input(f"please enter password for {file}")
+            if not file.verify_password(password):
+                print("Error:incorrect password")
+                return
+        
+        print(f"the contents of the file are :")
+        for line in file.data:
+            print(line)
 
     def mv(self):
         pass
