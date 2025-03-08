@@ -2,6 +2,7 @@ import re
 import hashlib
 import os
 
+
 class File:
     def __init__(self, name, data=None, password_hash=None):
         self.data = data if data else []
@@ -30,7 +31,6 @@ class File:
 
     def to_dict():
         pass
-
 
 
 class Folder:
@@ -63,74 +63,69 @@ class Folder:
 class FileMangment:
     def __init__(self):
 
-        
         self.root = Folder("/")
         self.current_folder = self.root
 
-    
-    def navigate_path(self,path:str):
-        if not path:  
+    def navigate_path(self, path: str):
+        if not path:
             self.current_folder = self.root
             return
-    
-        folders = path.strip("/").split("/")  
-        if path[0] == "/":  
-            destination = self.root  
-        else:  
-            destination = self.current_folder  
-    
+
+        folders = path.strip("/").split("/")
+        if path[0] == "/":
+            destination = self.root
+        else:
+            destination = self.current_folder
+
         for folder_name in folders:
-            if not folder_name or folder_name == ".": 
+            if not folder_name or folder_name == ".":
                 continue
-            if folder_name == "..":  
+            if folder_name == "..":
                 if destination == self.root:
                     print("Error: Already at root folder.")
                     return
                 else:
-                    destination = destination.parent 
+                    destination = destination.parent
             else:
                 for item in destination.contents:
                     if isinstance(item, Folder) and item.name == folder_name:
-                        destination = item  
+                        destination = item
                         found = True
                         break
                 if not found:
                     print(f"Error: Folder '{folder_name}' not found.")
-                    return None  
+                    return None
 
-        return destination  
+        return destination
 
-    # def execute(self,cmd):
-    #    parts = cmd.strip().split()
-    #    command = parts[0]
-    #    args = parts[:1]
-    #    if command == "cd":
-    #        self.cd(args)
-    #    elif command == "mkdir":
-    #        self.mkdir(args)
-    # def cd(self,args):
-    #    path = args[0]
-    #    if path == "/":
-    #        self.current_folder = self.path
-    #    else:
-    #        self.current_folder =
     def cd(self, path: str):
         """
         Change the current folder to the specified path.
         :param path: The path to navigate to (e.g., "folder1/folder2").
-        """    
-          
-        print(f"Current folder: {self.current_folder.name}")
+        """
+        destination = self.navigate_path(path)
+        if destination:
+            self.current_folder = destination
+            print(f"Current folder: {self.current_folder.name}")
 
-    def mkdir(self,path:str,new_folder:str):
-        
-        parts = path.strip("/").split("/")
-        last_part=parts[-1]
-        if last_part==self.current_folder :
-            return f"{self.current_folder} is already exist "
-        else :
-            
-        
+    def mkdir(self, name: str, path: str):
+
+        destination = self.navigate_path(path)
+        if not destination:
+            print(f"Error {path} not found")
+            return
+
+        else:
+            destination = self.current_folder
+
+        if destination.search_item(name):
+            print(f"Error: A folder or file with the name '{name}' already exists.")
+            return
+
+        new_folder = Folder(name, parent=destination)
+        destination.add_item(new_folder)
+        print(f"{new_folder} is succesfully added to {destination.name}")
+
     def ls(self, path):
         pass
 
@@ -147,24 +142,19 @@ class FileMangment:
         pass
 
 
-
-
-
-
-#test code for checking cd works well or not 
-
+# test code for checking cd works well or not
 
 
 def print_current_folder(file_system):
     print(f"Current folder :{file_system.current_folder.name}")
 
-file_system=FileMangment()
+
+file_system = FileMangment()
 
 root = file_system.root
-folder1 = Folder("folder1",parent=root)
-folder2 = Folder("folder2",parent=folder1)
-folder3 = Folder("folder3",parent=folder2)
-
+folder1 = Folder("folder1", parent=root)
+folder2 = Folder("folder2", parent=folder1)
+folder3 = Folder("folder3", parent=folder2)
 
 
 root.add_item(folder1)
@@ -173,15 +163,15 @@ folder2.add_item(folder3)
 
 
 print("--- Test 1: Start at root ---")
-print_current_folder(file_system) 
+print_current_folder(file_system)
 
 print("\n--- Test 2: Navigate to folder1 ---")
 file_system.cd("folder1")
-print_current_folder(file_system) 
+print_current_folder(file_system)
 
 print("\n--- Test 3: Navigate to folder2 (relative path) ---")
 file_system.cd("folder2")
-print_current_folder(file_system)  
+print_current_folder(file_system)
 
 print("\n--- Test 4: Navigate to folder3 (relative path) ---")
 file_system.cd("folder3")
@@ -197,8 +187,8 @@ print_current_folder(file_system)
 
 print("\n--- Test 7: Navigate to folder3 using absolute path ---")
 file_system.cd("/folder1/folder2/folder3")
-print_current_folder(file_system) 
+print_current_folder(file_system)
 
 print("\n--- Test 8: Try to navigate to a non-existent folder ---")
-file_system.cd("invalid_folder")  
+file_system.cd("invalid_folder")
 print_current_folder(file_system)
