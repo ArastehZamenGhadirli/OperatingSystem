@@ -157,9 +157,74 @@ class FileMangment:
     def rm(self,path):
         pass
 
-    def cp(self):
-        pass
+def cp(self, source_path: str, destination_path: str):
+    """
+    Copy a file or folder from the source path to the destination path.
+    :param source_path: The path of the item to copy (e.g., "folder1/file.txt").
+    :param destination_path: The path where the item should be copied (e.g., "folder2/file.txt").
+    """
+    if not source_path or not destination_path:
+        print("Error: Source or destination path not provided.")
+        return
 
+    
+    source_folders = source_path.strip("/").split("/")
+    source_item_name = source_folders[-1]  
+    source_parent_path = "/".join(source_folders[:-1])  
+
+    # Navigate to the source parent folder
+    if source_parent_path:
+        source_parent_folder = self.navigate_path(source_parent_path)
+    else:
+        source_parent_folder = self.current_folder
+
+    if not source_parent_folder:
+        print(f"{source_parent_path}' not found.")
+        return
+
+   
+    source_item = source_parent_folder.search_item(source_item_name)
+    if not source_item:
+        print(f"Error: Source item '{source_item_name}' not found ")
+        return
+
+    
+    destination_folders = destination_path.strip("/").split("/")
+    new_item_name = destination_folders[-1] 
+    destination_parent_path = "/".join(destination_folders[:-1])  
+
+    if destination_parent_path:
+        destination_parent_folder = self.navigate_path(destination_parent_path)
+    else:
+        destination_parent_folder = self.current_folder
+
+    if not destination_parent_folder:
+        print(f"Error: Destination parent folder '{destination_parent_path}' not found.")
+        return
+
+    if destination_parent_folder.search_item(new_item_name):
+        print(f"Error: An item with the name '{new_item_name}' already exists ")
+
+   
+    if isinstance(source_item, Folder):
+        
+        new_folder = Folder(new_item_name, parent=destination_parent_folder)
+        destination_parent_folder.add_item(new_folder)
+        for item in source_item.contents:
+            new_folder.add_item(item)
+    else:
+        new_file = File(new_item_name, data=source_item.data)
+        destination_parent_folder.add_item(new_file)
+
+    print(f"Item '{source_item_name}' copied to '{destination_path}' successfully.")
+        
+            
+        
+
+        
+        
+        
+        
     def cat(self,file_name:str):
         
         file = self.current_folder.search_item(file_name)
@@ -176,7 +241,8 @@ class FileMangment:
         for line in file.data:
             print(line)
 
-    def mv(self):
+
+    def mv(self,src_path:str,dest_path:str):
         pass
 
 
