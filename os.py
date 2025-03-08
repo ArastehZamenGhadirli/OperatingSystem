@@ -305,7 +305,58 @@ def cp(self, source_path: str, destination_path: str):
         print(f"Item '{source_item_name}' moved to '{destination_path}' successfully.")
 
 
-f
+
+def main():
+    
+    file_system = FileMangment()
+    while True:
+        user_input=input(">").strip()
+        if not user_input :
+            continue
+        
+        
+        parts= user_input.split()
+        command = parts[0]
+        args = parts[1:]
+        
+        if command == "cd":
+            if len(args) != 1:
+                print("Usage: cd <path>")
+            else:
+                file_system.cd(args[0])
+        elif command == "ls":
+            if len(args) > 1:
+                print("Usage: ls [path]")
+            else:
+                file_system.ls(args[0] if args else None)
+        elif command == "mkdir":
+            if len(args) != 1:
+                print("Usage: mkdir <name> [path]")
+            else:
+                file_system.mkdir(args[0])
+        elif command == "rm":
+            if len(args) != 1:
+                print("Usage: rm <path>")
+            else:
+                file_system.rm(args[0])
+        elif command == "cp":
+            if len(args) != 2:
+                print("Usage: cp <source_path> <destination_path>")
+            else:
+                file_system.cp(args[0], args[1])
+        elif command == "mv":
+            if len(args) != 2:
+                print("Usage: mv <source_path> <destination_path>")
+            else:
+                file_system.mv(args[0], args[1])
+        elif command == "exit":
+            print("Exiting...")
+            break
+        else:
+            print(f"Error: Unknown command '{command}'.")
+            
+
+
 
 # test code for checking cd works well or not
 
