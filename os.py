@@ -9,8 +9,6 @@ class File:
         self.name = name
         self._password_hash = password_hash
 
-    
-    
     def verify_password(self, password):
         """
         Verify the password for an encrypted file.
@@ -39,7 +37,7 @@ class File:
     def write(self, new_data):
         return self.data.append(new_data)
 
-    def to_dict():#it is for json 
+    def to_dict():  # it is for json
         pass
 
 
@@ -107,9 +105,6 @@ class FileMangment:
                     return None
 
         return destination
-    
-    
-    
 
     def cd(self, path: str):
         """
@@ -141,36 +136,58 @@ class FileMangment:
 
     def ls(self, path):
         if path:
-            end_folder=self.navigate_path(path)
-        
+            end_folder = self.navigate_path(path)
+
         contents = end_folder.list_contents()
         if not contents:
             print(f"{end_folder} is empty")
-        else :
-            
+        else:
+
             print(f"Contents of '{end_folder.name}':")
             for item in contents:
                 print(f"-item")
-            
-        
 
-    def rm(self,path):
-        pass
+        def rm(self, path: str):
+            """
+            Remove a file or folder at the specified path.
+            :param path: The path to the file or folder to remove (e.g., "folder1/file.txt").
+            """
+
+        if not path:
+            print("Error: No path provided.")
+            return
+
+        folders = path.strip("/").split("/")
+        item_name = folders[-1]
+        parent_path = "/".join(folders[:-1])
+
+        if parent_path:
+            parent_folder = self.navigate_path(parent_path)
+        else:
+            parent_folder = self.current_folder
+
+        if not parent_folder:
+            print(f"Error: Parent folder '{parent_path}' not found.")
+            return
+
+        item = parent_folder.search_item(item_name)
+        if not item:
+            print(f"Error: Item '{item_name}' not found in '{parent_folder.name}'.")
+            return
+
+        parent_folder.remove_item(item_name)
+        print(f"Item '{item_name}' removed successfully from '{parent_folder.name}'.")
+
 
 def cp(self, source_path: str, destination_path: str):
-    """
-    Copy a file or folder from the source path to the destination path.
-    :param source_path: The path of the item to copy (e.g., "folder1/file.txt").
-    :param destination_path: The path where the item should be copied (e.g., "folder2/file.txt").
-    """
+
     if not source_path or not destination_path:
         print("Error: Source or destination path not provided.")
         return
 
-    
     source_folders = source_path.strip("/").split("/")
-    source_item_name = source_folders[-1]  
-    source_parent_path = "/".join(source_folders[:-1])  
+    source_item_name = source_folders[-1]
+    source_parent_path = "/".join(source_folders[:-1])
 
     # Navigate to the source parent folder
     if source_parent_path:
@@ -182,16 +199,14 @@ def cp(self, source_path: str, destination_path: str):
         print(f"{source_parent_path}' not found.")
         return
 
-   
     source_item = source_parent_folder.search_item(source_item_name)
     if not source_item:
         print(f"Error: Source item '{source_item_name}' not found ")
         return
 
-    
     destination_folders = destination_path.strip("/").split("/")
-    new_item_name = destination_folders[-1] 
-    destination_parent_path = "/".join(destination_folders[:-1])  
+    new_item_name = destination_folders[-1]
+    destination_parent_path = "/".join(destination_folders[:-1])
 
     if destination_parent_path:
         destination_parent_folder = self.navigate_path(destination_parent_path)
@@ -199,15 +214,16 @@ def cp(self, source_path: str, destination_path: str):
         destination_parent_folder = self.current_folder
 
     if not destination_parent_folder:
-        print(f"Error: Destination parent folder '{destination_parent_path}' not found.")
+        print(
+            f"Error: Destination parent folder '{destination_parent_path}' not found."
+        )
         return
 
     if destination_parent_folder.search_item(new_item_name):
         print(f"Error: An item with the name '{new_item_name}' already exists ")
 
-   
     if isinstance(source_item, Folder):
-        
+
         new_folder = Folder(new_item_name, parent=destination_parent_folder)
         destination_parent_folder.add_item(new_folder)
         for item in source_item.contents:
@@ -217,43 +233,33 @@ def cp(self, source_path: str, destination_path: str):
         destination_parent_folder.add_item(new_file)
 
     print(f"Item '{source_item_name}' copied to '{destination_path}' successfully.")
-        
-            
-        
 
-        
-        
-        
-        
-    def cat(self,file_name:str):
-        
+    def cat(self, file_name: str):
+
         file = self.current_folder.search_item(file_name)
-        if not file or not isinstance(file,File) :
+        if not file or not isinstance(file, File):
             print(f"{file} does not exist.")
-        
+
         if file.is_encrypted():
-            password=input(f"please enter password for {file}")
+            password = input(f"please enter password for {file}")
             if not file.verify_password(password):
                 print("Error:incorrect password")
                 return
-        
+
         print(f"the contents of the file are :")
         for line in file.data:
             print(line)
 
-
         def mv(self, source_path: str, destination_path: str):
-        
+
             if not source_path or not destination_path:
                 print("Error: Source or destination path not provided.")
                 return
 
-        
         source_folders = source_path.strip("/").split("/")
-        source_item_name = source_folders[-1]  
-        source_parent_path = "/".join(source_folders[:-1])  
+        source_item_name = source_folders[-1]
+        source_parent_path = "/".join(source_folders[:-1])
 
-        
         if source_parent_path:
             source_parent_folder = self.navigate_path(source_parent_path)
         else:
@@ -263,39 +269,43 @@ def cp(self, source_path: str, destination_path: str):
             print(f"Error: Source parent folder '{source_parent_path}' not found.")
             return
 
-        
         source_item = source_parent_folder.search_item(source_item_name)
         if not source_item:
-            print(f"Error: Source item '{source_item_name}' not found in '{source_parent_folder.name}'.")
+            print(
+                f"Error: Source item '{source_item_name}' not found in '{source_parent_folder.name}'."
+            )
             return
 
-        
         destination_folders = destination_path.strip("/").split("/")
-        new_item_name = destination_folders[-1]  
-        destination_parent_path = "/".join(destination_folders[:-1])  
-        
+        new_item_name = destination_folders[-1]
+        destination_parent_path = "/".join(destination_folders[:-1])
+
         if destination_parent_path:
             destination_parent_folder = self.navigate_path(destination_parent_path)
         else:
             destination_parent_folder = self.current_folder
 
         if not destination_parent_folder:
-            print(f"Error: Destination parent folder '{destination_parent_path}' not found.")
+            print(
+                f"Error: Destination parent folder '{destination_parent_path}' not found."
+            )
             return
 
-        
         if destination_parent_folder.search_item(new_item_name):
-            print(f"Error: An item with the name '{new_item_name}' already exists in '{destination_parent_folder.name}'.")
+            print(
+                f"Error: An item with the name '{new_item_name}' already exists in '{destination_parent_folder.name}'."
+            )
             return
 
         # Move the item
-        source_parent_folder.remove_item(source_item_name)  
-        source_item.name = new_item_name 
-        destination_parent_folder.add_item(source_item) 
+        source_parent_folder.remove_item(source_item_name)
+        source_item.name = new_item_name
+        destination_parent_folder.add_item(source_item)
 
         print(f"Item '{source_item_name}' moved to '{destination_path}' successfully.")
-        
 
+
+f
 
 # test code for checking cd works well or not
 
