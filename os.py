@@ -242,8 +242,59 @@ def cp(self, source_path: str, destination_path: str):
             print(line)
 
 
-    def mv(self,src_path:str,dest_path:str):
-        pass
+        def mv(self, source_path: str, destination_path: str):
+        
+            if not source_path or not destination_path:
+                print("Error: Source or destination path not provided.")
+                return
+
+        
+        source_folders = source_path.strip("/").split("/")
+        source_item_name = source_folders[-1]  
+        source_parent_path = "/".join(source_folders[:-1])  
+
+        
+        if source_parent_path:
+            source_parent_folder = self.navigate_path(source_parent_path)
+        else:
+            source_parent_folder = self.current_folder
+
+        if not source_parent_folder:
+            print(f"Error: Source parent folder '{source_parent_path}' not found.")
+            return
+
+        
+        source_item = source_parent_folder.search_item(source_item_name)
+        if not source_item:
+            print(f"Error: Source item '{source_item_name}' not found in '{source_parent_folder.name}'.")
+            return
+
+        
+        destination_folders = destination_path.strip("/").split("/")
+        new_item_name = destination_folders[-1]  
+        destination_parent_path = "/".join(destination_folders[:-1])  
+        
+        if destination_parent_path:
+            destination_parent_folder = self.navigate_path(destination_parent_path)
+        else:
+            destination_parent_folder = self.current_folder
+
+        if not destination_parent_folder:
+            print(f"Error: Destination parent folder '{destination_parent_path}' not found.")
+            return
+
+        
+        if destination_parent_folder.search_item(new_item_name):
+            print(f"Error: An item with the name '{new_item_name}' already exists in '{destination_parent_folder.name}'.")
+            return
+
+        # Move the item
+        source_parent_folder.remove_item(source_item_name)  
+        source_item.name = new_item_name 
+        destination_parent_folder.add_item(source_item) 
+
+        print(f"Item '{source_item_name}' moved to '{destination_path}' successfully.")
+        
 
 
 # test code for checking cd works well or not
