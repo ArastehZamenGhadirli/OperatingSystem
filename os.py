@@ -97,6 +97,9 @@ class FileMangment:
                     return None
 
         return destination
+    
+    
+    
 
     def cd(self, path: str):
         """
@@ -127,9 +130,21 @@ class FileMangment:
         print(f"{new_folder} is succesfully added to {destination.name}")
 
     def ls(self, path):
-        pass
+        if path:
+            end_folder=self.navigate_path(path)
+        
+        contents = end_folder.list_contents()
+        if not contents:
+            print(f"{end_folder} is empty")
+        else :
+            
+            print(f"Contents of '{end_folder.name}':")
+            for item in contents:
+                print(f"-item")
+            
+        
 
-    def rm(self):
+    def rm(self,path):
         pass
 
     def cp(self):
